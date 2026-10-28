@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { and, eq } from "drizzle-orm";
+import { db, schema } from "@/db";
 import { notFound, redirect } from "next/navigation";
 import { requireUser } from "@/lib/session";
 import { getLessonDetail, getOutline, hasAccess, touchActivity } from "@/lib/queries";
@@ -7,6 +9,16 @@ import { CourseOutline } from "@/components/course-outline";
 import { CompleteButton } from "./complete-button";
 
 type Params = { curso: string; leccion: string };
+
+export async function generateMetadata({ params }: { params: Promise<Params> }) {
+  const { curso, leccion } = await params;
+  const [row] = await db
+    .select({ title: schema.lessons.title })
+    .from(schema.lessons)
+    .innerJoin(schema.courses, eq(schema.courses.id, schema.lessons.courseId))
+    .where(and(eq(schema.courses.slug, curso), eq(schema.lessons.slug, leccion)));
+  return { title: row?.title ?? "Lección" };
+}
 
 function YouTube({ id, title }: { id: string; title: string }) {
   return (

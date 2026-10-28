@@ -7,7 +7,7 @@ import { BulkActivation } from "./bulk-activation";
 
 export const metadata: Metadata = { title: "Panel" };
 
-const { user, enrollments, courses, account, lessonProgress } = schema;
+const { user } = schema;
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ q?: string }> }) {
   await requireAdmin();
@@ -20,9 +20,11 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ q
       name: user.name,
       email: user.email,
       role: user.role,
-      activated: sql<boolean>`EXISTS (SELECT 1 FROM ${account} WHERE ${account.userId} = ${user.id})`,
-      courses: sql<string[]>`COALESCE(ARRAY(SELECT ${courses.title} FROM ${enrollments} JOIN ${courses} ON ${courses.id} = ${enrollments.courseId} WHERE ${enrollments.userId} = ${user.id} AND ${enrollments.revokedAt} IS NULL ORDER BY ${courses.position}), '{}')`,
-      lastDone: sql<string | null>`(SELECT MAX(${lessonProgress.completedAt}) FROM ${lessonProgress} WHERE ${lessonProgress.userId} = ${user.id})`,
+      // Subconsultas con nombres de tabla explícitos: en una consulta de una sola
+      // tabla Drizzle omite el prefijo y "id" quedaría ambiguo.
+      activated: sql<boolean>`EXISTS (SELECT 1 FROM "account" a WHERE a.user_id = "user".id)`,
+      courses: sql<string[]>`COALESCE(ARRAY(SELECT c.title FROM "enrollments" e JOIN "courses" c ON c.id = e.course_id WHERE e.user_id = "user".id AND e.revoked_at IS NULL ORDER BY c.position), '{}')`,
+      lastDone: sql<string | null>`(SELECT MAX(lp.completed_at) FROM "lesson_progress" lp WHERE lp.user_id = "user".id)`,
     })
     .from(user)
     .where(term ? or(ilike(user.name, `%${term}%`), ilike(user.email, `%${term}%`)) : undefined)
