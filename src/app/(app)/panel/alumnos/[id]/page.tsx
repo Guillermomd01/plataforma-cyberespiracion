@@ -42,7 +42,7 @@ export default async function Page({
     .orderBy(sql`${emailLog.createdAt} DESC`)
     .limit(8);
   const activated = await hasPassword(id);
-  const fmt = new Intl.DateTimeFormat("es-ES", { dateStyle: "medium", timeStyle: "short" });
+  const fmt = new Intl.DateTimeFormat("es-ES", { dateStyle: "medium", timeStyle: "short", timeZone: "Europe/Madrid" });
   const templateNames: Record<string, string> = {
     activate: "Activa tu cuenta",
     "reset-password": "Restablecer contraseña",

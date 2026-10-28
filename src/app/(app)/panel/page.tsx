@@ -31,7 +31,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ q
     .orderBy(desc(sql`${user.role} = 'admin'`), asc(user.name));
 
   const pending = rows.filter((r) => !r.activated && r.courses.length > 0).length;
-  const fmt = new Intl.DateTimeFormat("es-ES", { day: "numeric", month: "short", year: "numeric" });
+  const fmt = new Intl.DateTimeFormat("es-ES", { day: "numeric", month: "short", year: "numeric", timeZone: "Europe/Madrid" });
 
   return (
     <main className="mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-14">
