@@ -5,6 +5,8 @@
 [build.environment]
   NODE_VERSION = "22"
   NEXT_TELEMETRY_DISABLED = "1"
+  # Estos valores no son secretos (nombre del CDN y remitente).
+  SECRETS_SCAN_OMIT_KEYS = "BUNNY_CDN_HOST,EMAIL_FROM,BETTER_AUTH_URL"
 
 [[headers]]
   for = "/*"

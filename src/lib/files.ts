@@ -8,7 +8,7 @@ import { createHash } from "node:crypto";
 const HOURS = 4;
 
 export function signedFileUrl(storagePath: string, opts: { download?: string } = {}) {
-  const host = process.env.BUNNY_CDN_HOST; // p. ej. cyberespiracion-cursos.b-cdn.net
+  const host = process.env.BUNNY_CDN_HOST; // nombre de la Pull Zone (*.b-cdn.net)
   const key = process.env.BUNNY_TOKEN_KEY;
   if (!host || !key) return null;
 
